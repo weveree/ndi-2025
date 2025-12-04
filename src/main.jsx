@@ -5,6 +5,7 @@ import './index.css';
 import Layout from './Layout';
 import NotFound from './routes/404';
 import Home from './routes/Home';
+import Snake from './components/snake/Snake';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/snake" element={<Snake />} />
         </Route>
       </Routes>
     </BrowserRouter>
