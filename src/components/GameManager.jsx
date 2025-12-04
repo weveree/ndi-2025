@@ -6,10 +6,9 @@ export default function GameManager({children}) {
     const [data,setData] = useState({
         money:0,
         energy:0
-
     })
   return (
-    <GameManagerContext.Provider>
+    <GameManagerContext.Provider value={{data}}>
         {children}
     </GameManagerContext.Provider>
   )
