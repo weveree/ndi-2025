@@ -5,9 +5,9 @@ import './index.css';
 import Layout from './Layout';
 import NotFound from './routes/404';
 import Home from './routes/Home';
-import Snake from './components/game/snake/Snake';
-import Apple from './components/game/apple/Apple';
-import Hole_board from './components/game/Hole-board/Hole_board';
+import Snake from './components/game/Snake';
+import Apple from './components/game/Apple';
+import Hole_board from './components/game/Hole_board';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
