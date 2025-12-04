@@ -42,6 +42,47 @@ export function MainMap({ children }) {
     center: { x: 0, y: 0 },
   });
 
+  function clampCamera(state, t = texture) {
+    if (!app?.renderer || t === Texture.EMPTY) {
+      return state;
+    }
+
+    const viewWidth = app.renderer.screen.width;
+    const viewHeight = app.renderer.screen.height;
+
+    const minScaleX = viewWidth / t.width;
+    const minScaleY = viewHeight / t.height;
+    const minScale = Math.max(minScaleX, minScaleY);
+
+    const scale = Math.max(minScale, Math.min(5, state.scale));
+
+    const worldWidth = t.width * scale;
+    const worldHeight = t.height * scale;
+
+    let minX, maxX, minY, maxY;
+
+    if (worldWidth <= viewWidth) {
+      minX = maxX = viewWidth / 2;
+    } else {
+      minX = viewWidth - worldWidth / 2;
+      maxX = worldWidth / 2;
+    }
+
+    if (worldHeight <= viewHeight) {
+      minY = maxY = viewHeight / 2;
+    } else {
+      minY = viewHeight - worldHeight / 2;
+      maxY = worldHeight / 2;
+    }
+
+    return {
+      ...state,
+      scale,
+      x: Math.min(maxX, Math.max(minX, state.x)),
+      y: Math.min(maxY, Math.max(minY, state.y)),
+    };
+  }
+
   function applyZoom(deltaScale, centerScreenX, centerScreenY) {
     setCamera((prev) => {
       const oldScale = prev.scale;
@@ -55,17 +96,34 @@ export function MainMap({ children }) {
       const newX = prev.x + (centerScreenX - newScreenX);
       const newY = prev.y + (centerScreenY - newScreenY);
 
-      return { x: newX, y: newY, scale: newScale };
+      return clampCamera({ x: newX, y: newY, scale: newScale });
     });
+  }
+
+  function updateClamp() {
+    setCamera((prev) => clampCamera(prev));
   }
 
   useEffect(() => {
     if (texture === Texture.EMPTY) {
       Assets.load(mapTexture).then((result) => {
         setTexture(result);
+        setCamera((prev) => clampCamera(prev, result));
       });
     }
   }, [texture]);
+
+  useEffect(() => {
+    if (!app || !app.renderer) return;
+
+    updateClamp();
+
+    app.renderer.on('resize', updateClamp);
+
+    return () => {
+      app.renderer.off('resize', updateClamp);
+    };
+  }, [app, app.renderer]);
 
   useEffect(() => {
     if (!app || !app.renderer) return;
@@ -104,18 +162,22 @@ export function MainMap({ children }) {
       const dx = pos.x - dragRef.current.startPointer.x;
       const dy = pos.y - dragRef.current.startPointer.y;
 
-      setCamera((prev) => ({
-        ...prev,
-        x: dragRef.current.startCamera.x + dx,
-        y: dragRef.current.startCamera.y + dy,
-      }));
+      setCamera((prev) =>
+        clampCamera({
+          ...prev,
+          x: dragRef.current.startCamera.x + dx,
+          y: dragRef.current.startCamera.y + dy,
+        }),
+      );
     }
 
     /**
      * @param {FederatedPointerEvent} event
      */
-    function onPointerUp() {
-      dragRef.current.isDragging = false;
+    function onPointerUp(event) {
+      if (event.button === 1) {
+        dragRef.current.isDragging = false;
+      }
     }
 
     /**
