@@ -3,7 +3,6 @@ import { MainMap } from '@/components/main-chalenge/ui/MainMap';
 import { Application, extend } from '@pixi/react';
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { useRef } from 'react';
-
 extend({
   Container,
   Graphics,
@@ -15,6 +14,7 @@ export default function Home() {
 
   return (
     <GameManager>
+      <ChatBot/>
       <div ref={parentRef} className="h-full">
         <Application resizeTo={parentRef}>
           <MainMap />
