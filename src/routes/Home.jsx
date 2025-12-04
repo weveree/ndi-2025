@@ -5,6 +5,7 @@ import { useContext } from 'react';
 export default function Home() {
   return (
     <GameManager>
+      
     </GameManager>
   );
 }
