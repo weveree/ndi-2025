@@ -5,7 +5,7 @@ import './index.css';
 import Layout from './Layout';
 import NotFound from './routes/404';
 import Home from './routes/Home';
-import Snake from './components/snake/Snake';
+import Snake from './components/game/snake/Snake';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
