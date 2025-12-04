@@ -16,7 +16,7 @@ function distance(p1, p2) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-export function MainMap({ children }) {
+export default function MainMap({ children }) {
   const { app } = useApplication();
 
   const spriteRef = useRef(null);
@@ -139,8 +139,6 @@ export function MainMap({ children }) {
     function onPointerDown(event) {
       const pos = event.global;
 
-      if (event.button !== 1) return;
-
       dragRef.current.isDragging = true;
       dragRef.current.startPointer = { x: pos.x, y: pos.y };
       dragRef.current.startCamera = {
@@ -156,8 +154,6 @@ export function MainMap({ children }) {
       if (pinchRef.current.isPinching) return;
       if (!dragRef.current.isDragging) return;
 
-      if (event.buttons !== 4) return;
-
       const pos = event.global;
       const dx = pos.x - dragRef.current.startPointer.x;
       const dy = pos.y - dragRef.current.startPointer.y;
@@ -171,13 +167,8 @@ export function MainMap({ children }) {
       );
     }
 
-    /**
-     * @param {FederatedPointerEvent} event
-     */
-    function onPointerUp(event) {
-      if (event.button === 1) {
-        dragRef.current.isDragging = false;
-      }
+    function onPointerUp() {
+      dragRef.current.isDragging = false;
     }
 
     /**
