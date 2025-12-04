@@ -1,7 +1,7 @@
 // GameBoard.jsx
 import React from 'react';
 import clsx from 'clsx';
-import styles from './GameBoard.module.css'; // Voir CSS ci-dessous
+import styles from './GameBoard.module.css';
 import { GRID_SIZE, CELL_SIZE } from './gameConstants';
 
 const GameBoard = ({
@@ -12,8 +12,9 @@ const GameBoard = ({
   snake,
   food,
   holes,
+  train = [],
   onRestart,
-  emojis = { head: '🐍', body: '🟩', food: '🍎', hole: '' },
+  emojis = { head: '🐍', body: '🟩', food: '🍎', hole: '', trainEngine: '🚂', trainBody: '🚃' },
 }) => {
   return (
     <div className={styles.container}>
@@ -40,21 +41,25 @@ const GameBoard = ({
           const isFood = food.x === x && food.y === y;
           const isHole = holes.some((h) => h.x === x && h.y === y);
 
+          // Train
+          const trainIndex = train.findIndex((t) => t.x === x && t.y === y);
+          const isTrainEngine = trainIndex === 0;
+          const isTrainBody = trainIndex > 0;
+
           return (
             <div
               key={index}
               className={clsx(
                 styles.cell,
-                isHead && styles.head,
-                isBody && styles.body,
-                isFood && styles.food,
-                isHole && styles.hole,
+                isHole && styles.hole, // Classe CSS pour le trou
               )}
             >
               {isHead && emojis.head}
               {isBody && emojis.body}
               {isFood && emojis.food}
               {isHole && emojis.hole}
+              {isTrainEngine && emojis.trainEngine}
+              {isTrainBody && emojis.trainBody}
             </div>
           );
         })}

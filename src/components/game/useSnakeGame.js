@@ -2,23 +2,25 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { GRID_SIZE, DIRECTIONS, INITIAL_SPEED } from './gameConstants';
 
-// Fonction utilitaire pour position aléatoire
 const getRandomPosition = () => ({
   x: Math.floor(Math.random() * GRID_SIZE),
   y: Math.floor(Math.random() * GRID_SIZE),
 });
 
-export const useSnakeGame = ({ enableHoles = false, holeCount = 5 } = {}) => {
+// --- MODIFICATION ICI : Ajout de 'trainSpawnRate' ---
+// Par défaut c'est 0.05 (5%), mais on pourra l'augmenter dans le niveau
+export const useSnakeGame = ({ enableHoles = false, holeCount = 5, enableTrain = false, trainSpawnRate = 0.05 } = {}) => {
   const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
   const [food, setFood] = useState({ x: 15, y: 15 });
   const [holes, setHoles] = useState([]);
+  const [train, setTrain] = useState([]);
+
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  
+
   const directionRef = useRef(DIRECTIONS.RIGHT);
 
-  // Génération intelligente (évite les collisions)
   const generateValidPosition = useCallback((occupiedPositions) => {
     let position;
     let isValid = false;
@@ -32,35 +34,48 @@ export const useSnakeGame = ({ enableHoles = false, holeCount = 5 } = {}) => {
     return position;
   }, []);
 
-  // Initialisation du jeu
+  // --- LOGIQUE DU TRAIN ---
+  const spawnTrain = () => {
+    const row = Math.floor(Math.random() * GRID_SIZE);
+    // Un train un peu plus long (5 wagons)
+    return [{x: -1, y: row}, {x: -2, y: row}, {x: -3, y: row}, {x: -4, y: row}, {x: -5, y: row}];
+  };
+
+  const moveTrain = (currentTrain) => {
+    if (currentTrain.length === 0) return [];
+    const lastWagon = currentTrain[currentTrain.length - 1];
+    if (lastWagon.x >= GRID_SIZE) return []; 
+    
+    return currentTrain.map(segment => ({ ...segment, x: segment.x + 1 }));
+  };
+  // ------------------------
+
   const initializeGame = useCallback(() => {
     const startSnake = [{ x: 10, y: 10 }];
-    let currentHoles = [];
-
-    // Générer les trous si activés
+    let startHoles = [];
+    
     if (enableHoles) {
       for (let i = 0; i < holeCount; i++) {
-        currentHoles.push(generateValidPosition([...startSnake, ...currentHoles]));
+        startHoles.push(generateValidPosition([...startSnake, ...startHoles]));
       }
     }
 
-    const startFood = generateValidPosition([...startSnake, ...currentHoles]);
+    const startFood = generateValidPosition([...startSnake, ...startHoles]);
 
     setSnake(startSnake);
-    setHoles(currentHoles);
+    setHoles(startHoles);
     setFood(startFood);
+    setTrain([]);
     setScore(0);
     setGameOver(false);
     setIsPaused(false);
     directionRef.current = DIRECTIONS.RIGHT;
   }, [enableHoles, holeCount, generateValidPosition]);
 
-  // Démarrage initial
   useEffect(() => {
     initializeGame();
   }, [initializeGame]);
 
-  // Gestion Clavier
   useEffect(() => {
     const handleKeyDown = (e) => {
       switch (e.key) {
@@ -76,7 +91,7 @@ export const useSnakeGame = ({ enableHoles = false, holeCount = 5 } = {}) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Boucle de Jeu
+  // BOUCLE DE JEU
   useEffect(() => {
     if (gameOver || isPaused) return;
 
@@ -87,40 +102,47 @@ export const useSnakeGame = ({ enableHoles = false, holeCount = 5 } = {}) => {
         y: currentHead.y + directionRef.current.y,
       };
 
-      // Vérification Collisions (Murs, Soi-même, Trous)
-      if (
-        newHead.x < 0 || newHead.x >= GRID_SIZE ||
-        newHead.y < 0 || newHead.y >= GRID_SIZE ||
-        snake.some(s => s.x === newHead.x && s.y === newHead.y) ||
-        holes.some(h => h.x === newHead.x && h.y === newHead.y)
-      ) {
+      // 1. Mouvement du Train
+      let newTrain = train;
+      if (enableTrain) {
+        if (train.length > 0) {
+          newTrain = moveTrain(train);
+        // --- MODIFICATION ICI : Utilisation du taux personnalisé ---
+        } else if (Math.random() < trainSpawnRate) { 
+          newTrain = spawnTrain();
+        }
+      }
+
+      // 2. Vérification Collisions
+      const hitWall = newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE;
+      const hitSelf = snake.some(s => s.x === newHead.x && s.y === newHead.y);
+      const hitHole = holes.some(h => h.x === newHead.x && h.y === newHead.y);
+      const hitTrain = newTrain.some(t => t.x === newHead.x && t.y === newHead.y);
+
+      if (hitWall || hitSelf || hitHole || hitTrain) {
         setGameOver(true);
+        setTrain(newTrain);
         return;
       }
 
       const newSnake = [newHead, ...snake];
 
-      // Manger la nourriture
+      // 3. Manger
       if (newHead.x === food.x && newHead.y === food.y) {
         setScore(s => s + 1);
-        setFood(generateValidPosition([...newSnake, ...holes]));
+        setFood(generateValidPosition([...newSnake, ...holes, ...newTrain]));
       } else {
         newSnake.pop();
       }
 
       setSnake(newSnake);
+      setTrain(newTrain);
+
     }, INITIAL_SPEED);
 
+    // Ajout de trainSpawnRate aux dépendances
     return () => clearInterval(gameLoop);
-  }, [snake, food, holes, gameOver, isPaused, generateValidPosition]);
+  }, [snake, food, holes, train, gameOver, isPaused, enableTrain, trainSpawnRate, generateValidPosition]);
 
-  return {
-    snake,
-    food,
-    holes,
-    score,
-    gameOver,
-    isPaused,
-    restartGame: initializeGame
-  };
+  return { snake, food, holes, train, score, gameOver, isPaused, restartGame: initializeGame };
 };

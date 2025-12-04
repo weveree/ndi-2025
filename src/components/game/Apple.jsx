@@ -13,10 +13,9 @@ const AppleGame = () => {
 
   return (
     <GameBoard
-      title="🍎 Apple"
+      title="🍎 Evil Apple"
       {...game}
       onRestart={game.restartGame}
-      // On surcharge les emojis pour ce niveau
       emojis={{ head: '🍎', body: '🍎', food: '🐍', hole: '' }}
     />
   );
