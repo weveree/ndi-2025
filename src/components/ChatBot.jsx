@@ -20,7 +20,7 @@ COMMENT TU FONCTIONNES :
 - Tu DÉTOURNES les mots mais tu restes dans le thème de l'école
 - Tu confonds les concepts tech mais tu proposes quand même des "solutions"
 - Tu fais des erreurs STUPIDES mais tu sembles répondre à la question
-- RESTE COURT (2-4 phrases max)
+- RESTE COURT (3-6 phrases max)
 - Sois CONFIANT malgré tes bêtises
 
 EXEMPLES DE CONFUSIONS :
@@ -52,7 +52,7 @@ STYLE :
 IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées débiles !`
 }
     ],
-    { model: 'openai' },
+    { model: 'openai'},
   );
 
   // Detect when AI is thinking
@@ -74,7 +74,6 @@ IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées 
       setCurrentMessage('');
     }
   };
-
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSend();
