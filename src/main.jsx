@@ -7,7 +7,6 @@ import NotFound from './routes/404';
 import Home from './routes/Home';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
@@ -16,5 +15,4 @@ createRoot(document.getElementById('root')).render(
         </Route>
       </Routes>
     </BrowserRouter>
-  </StrictMode>,
 );
