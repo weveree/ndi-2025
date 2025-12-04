@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './Apple.module.css';
+import styles from './Hole_board.module.css';
 import clsx from 'clsx';
-import { useNavigate } from 'react-router';
 
-const GRID_SIZE = 20; // Taille de la grille (20x20)
-const CELL_SIZE = 20; // Taille d'une case en pixels
-const INITIAL_SPEED = 200; // Vitesse initiale (ms)
+const GRID_SIZE = 20;
+const CELL_SIZE = 20;
+const INITIAL_SPEED = 200;
+const HOLE_COUNT = 5;
 
-// Directions possibles
 const DIRECTIONS = {
   UP: { x: 0, y: -1 },
   DOWN: { x: 0, y: 1 },
@@ -18,23 +17,65 @@ const DIRECTIONS = {
 const AppleGame = () => {
   const [apple, setApple] = useState([{ x: 10, y: 10 }]);
   const [food, setFood] = useState({ x: 15, y: 15 });
+  const [holes, setHoles] = useState([]);
   const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  let nav = useNavigate();
-  // Utiliser useRef pour la direction afin d'éviter les bugs de touches rapides
+
   const directionRef = useRef(DIRECTIONS.RIGHT);
 
-  // Fonction pour générer de la nourriture aléatoire
-  const generateFood = () => {
+  const getRandomPosition = () => {
     return {
       x: Math.floor(Math.random() * GRID_SIZE),
       y: Math.floor(Math.random() * GRID_SIZE),
     };
   };
 
-  // Gestion des touches du clavier
+  // --- CORRECTION 1 : generateFood vérifie maintenant les collisions ---
+  const generateFood = (currentApple, currentHoles) => {
+    let newFood;
+    let isInvalid = true;
+
+    while (isInvalid) {
+      newFood = getRandomPosition();
+
+      // Vérifier si c'est sur un trou
+      const isOnHole = currentHoles.some((h) => h.x === newFood.x && h.y === newFood.y);
+      // Vérifier si c'est sur le joueur (apple)
+      const isOnApple = currentApple.some((a) => a.x === newFood.x && a.y === newFood.y);
+
+      // Si la case est libre, on valide et on sort de la boucle
+      if (!isOnHole && !isOnApple) {
+        isInvalid = false;
+      }
+    }
+    return newFood;
+  };
+
+  const generateHoles = (appleBody) => {
+    const newHoles = [];
+    while (newHoles.length < HOLE_COUNT) {
+      const position = getRandomPosition();
+      const isOnApple = appleBody.some((s) => s.x === position.x && s.y === position.y);
+      const isDuplicate = newHoles.some((h) => h.x === position.x && h.y === position.y);
+
+      if (!isOnApple && !isDuplicate) {
+        newHoles.push(position);
+      }
+    }
+    return newHoles;
+  };
+
+  // Initialisation au chargement
+  useEffect(() => {
+    const initialApple = [{ x: 10, y: 10 }];
+    const initialHoles = generateHoles(initialApple);
+    setHoles(initialHoles);
+    // On génère la première nourriture en tenant compte des trous
+    setFood(generateFood(initialApple, initialHoles));
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       switch (e.key) {
@@ -50,19 +91,17 @@ const AppleGame = () => {
         case 'ArrowRight':
           if (directionRef.current !== DIRECTIONS.LEFT) directionRef.current = DIRECTIONS.RIGHT;
           break;
-        case ' ': // Espace pour pause
+        case ' ':
           setIsPaused((prev) => !prev);
           break;
         default:
           break;
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Boucle principale du jeu
   useEffect(() => {
     if (gameOver || isPaused) return;
 
@@ -73,13 +112,13 @@ const AppleGame = () => {
         y: apple[0].y + directionRef.current.y,
       };
 
-      // 1. Vérifier les collisions (Murs ou Soi-même)
       if (
         newHead.x < 0 ||
         newHead.x >= GRID_SIZE ||
         newHead.y < 0 ||
         newHead.y >= GRID_SIZE ||
-        apple.some((segment) => segment.x === newHead.x && segment.y === newHead.y)
+        apple.some((segment) => segment.x === newHead.x && segment.y === newHead.y) ||
+        holes.some((hole) => hole.x === newHead.x && hole.y === newHead.y)
       ) {
         setGameOver(true);
         return;
@@ -87,29 +126,36 @@ const AppleGame = () => {
 
       const newApple = [newHead, ...apple];
 
-      // 2. Vérifier si on mange la pomme
       if (newHead.x === food.x && newHead.y === food.y) {
         setScore((s) => s + 1);
-        setFood(generateFood());
-        // On ne retire pas la queue, donc le serpent grandit
+        // --- CORRECTION 2 : On passe les trous actuels et le nouveau serpent pour générer la nourriture ---
+        setFood(generateFood(newApple, holes));
       } else {
-        newApple.pop(); // On retire la queue pour garder la même taille
+        newApple.pop();
       }
 
       setApple(newApple);
-      console.log(score);
-      if (score > 3) nav('/Hole_board');
     };
 
     const gameLoop = setInterval(moveApple, INITIAL_SPEED);
-
     return () => clearInterval(gameLoop);
-  }, [apple, food, gameOver, isPaused]);
+  }, [apple, food, gameOver, isPaused, holes]);
 
-  // Redémarrer le jeu
+  // --- CORRECTION 3 : Logique de redémarrage robuste ---
   const restartGame = () => {
-    setApple([{ x: 10, y: 10 }]);
-    setFood(generateFood());
+    const initialApple = [{ x: 10, y: 10 }];
+
+    // 1. On génère d'abord les trous
+    const newHoles = generateHoles(initialApple);
+
+    // 2. On génère la nourriture en évitant ces nouveaux trous
+    const newFood = generateFood(initialApple, newHoles);
+
+    // 3. On met tout à jour
+    setApple(initialApple);
+    setHoles(newHoles);
+    setFood(newFood);
+
     setDirection(DIRECTIONS.RIGHT);
     directionRef.current = DIRECTIONS.RIGHT;
     setScore(0);
@@ -119,7 +165,7 @@ const AppleGame = () => {
 
   return (
     <div className={styles.appleContainer}>
-      <h1>🍎 Apple</h1>
+      <h1>🐍 React Apple</h1>
       <div className={styles.scoreBoard}>
         <span>Score : {score}</span>
         {isPaused && <span className={styles.pauseBadge}>PAUSE</span>}
@@ -140,6 +186,7 @@ const AppleGame = () => {
           const isAppleHead = apple[0].x === x && apple[0].y === y;
           const isAppleBody = apple.some((s, i) => i !== 0 && s.x === x && s.y === y);
           const isFood = food.x === x && food.y === y;
+          const isHole = holes.some((h) => h.x === x && h.y === y);
 
           return (
             <div
@@ -149,6 +196,7 @@ const AppleGame = () => {
                 isAppleHead && styles.appleHead,
                 isAppleBody && styles.appleBody,
                 isFood && styles.food,
+                isHole && styles.hole,
               )}
             ></div>
           );
@@ -162,7 +210,6 @@ const AppleGame = () => {
           </div>
         )}
       </div>
-      <p className={styles.controlsInfo}>Utilisez les flèches pour bouger, Espace pour pause.</p>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Snake.module.css';
 import clsx from 'clsx';
+import { useNavigate } from 'react-router';
 
 const GRID_SIZE = 20; // Taille de la grille (20x20)
 const CELL_SIZE = 20; // Taille d'une case en pixels
@@ -21,7 +22,7 @@ const SnakeGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-
+  let nav = useNavigate();
   // Utiliser useRef pour la direction afin d'éviter les bugs de touches rapides
   const directionRef = useRef(DIRECTIONS.RIGHT);
 
@@ -96,6 +97,7 @@ const SnakeGame = () => {
       }
 
       setSnake(newSnake);
+      if (score > 1) nav('/Apple');
     };
 
     const gameLoop = setInterval(moveSnake, INITIAL_SPEED);
