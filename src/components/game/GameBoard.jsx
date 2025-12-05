@@ -1,8 +1,6 @@
-// GameBoard.jsx
-import React from 'react';
 import clsx from 'clsx';
 import styles from './GameBoard.module.css';
-import { GRID_SIZE, CELL_SIZE } from './gameConstants';
+import { CELL_SIZE, GRID_SIZE } from './gameConstants';
 
 const GameBoard = ({
   title,
@@ -13,8 +11,10 @@ const GameBoard = ({
   food,
   holes,
   train = [],
+  eggs = [],
   onRestart,
-  emojis = { head: '🐍', body: '🟩', food: '🍎', hole: '', trainEngine: '🚂', trainBody: '🚃' },
+  instruction = null,
+  emojis = { head: '🐍', body: '🟩', food: '🍎', hole: '', trainEngine: '🚂', trainBody: '🚃', egg: '🥚' },
 }) => {
   return (
     <div className={styles.container}>
@@ -23,6 +23,11 @@ const GameBoard = ({
         <span>Score : {score}</span>
         {isPaused && <span className={styles.pauseBadge}>PAUSE</span>}
       </div>
+
+      {/* MODIFICATION ICI : On affiche le message seulement si l'instruction existe */}
+      {instruction && (
+        <p style={{ fontSize: '0.9rem', margin: '5px 0', color: '#f1c40f', fontWeight: 'bold' }}>{instruction}</p>
+      )}
 
       <div
         className={styles.board}
@@ -41,25 +46,21 @@ const GameBoard = ({
           const isFood = food.x === x && food.y === y;
           const isHole = holes.some((h) => h.x === x && h.y === y);
 
-          // Train
           const trainIndex = train.findIndex((t) => t.x === x && t.y === y);
           const isTrainEngine = trainIndex === 0;
           const isTrainBody = trainIndex > 0;
 
+          const isEgg = eggs.some((e) => e.x === x && e.y === y);
+
           return (
-            <div
-              key={index}
-              className={clsx(
-                styles.cell,
-                isHole && styles.hole, // Classe CSS pour le trou
-              )}
-            >
+            <div key={index} className={clsx(styles.cell, isHole && styles.hole)}>
               {isHead && emojis.head}
               {isBody && emojis.body}
               {isFood && emojis.food}
               {isHole && emojis.hole}
               {isTrainEngine && emojis.trainEngine}
               {isTrainBody && emojis.trainBody}
+              {isEgg && !isHead && !isFood && emojis.egg}
             </div>
           );
         })}

@@ -1,16 +1,13 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { useSnakeGame } from './useSnakeGame';
-import GameBoard from './GameBoard';
+import { useEffect } from 'react';
+import GameBoard from '../GameBoard';
+import { useSnakeGame } from '../useSnakeGame';
 
-const TrainLevel = () => {
+export default function Train({ onNextLevel }) {
   const game = useSnakeGame({ enableTrain: true });
-  const nav = useNavigate();
 
   useEffect(() => {
-    if (game.score > 4) nav('/duck_train_level');
-    console.log(game.score);
-  }, [game.score, nav]);
+    if (game.score > 1) onNextLevel();
+  }, [game.score, onNextLevel]);
 
   return (
     <GameBoard
@@ -27,6 +24,4 @@ const TrainLevel = () => {
       }}
     />
   );
-};
-
-export default TrainLevel;
+}
