@@ -2,6 +2,8 @@ import mapTexture from '@/assets/map.png';
 import { useApplication } from '@pixi/react';
 import { Assets, FederatedPointerEvent, FederatedWheelEvent, Texture } from 'pixi.js';
 import { useEffect, useRef, useState } from 'react';
+import { useGameManager } from '../GameManager';
+import AlertButton from './AlertButton';
 
 function screenToWorld(cameraState, screenX, screenY) {
   return {
@@ -16,8 +18,9 @@ function distance(p1, p2) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-export default function MainMap({ children }) {
+export default function MainMap() {
   const { app } = useApplication();
+  const { alerts } = useGameManager();
 
   const spriteRef = useRef(null);
 
@@ -272,7 +275,17 @@ export default function MainMap({ children }) {
   return (
     <pixiContainer scale={camera.scale} x={camera.x} y={camera.y}>
       <pixiSprite ref={spriteRef} anchor={0.5} texture={texture} />
-      {children}
+      {alerts.map((alert) => (
+        <AlertButton
+          key={alert.id}
+          type={alert.type}
+          x={alert.x}
+          y={alert.y}
+          onClick={() => {
+            console.log(`Alert ${alert.id} clicked`);
+          }}
+        />
+      ))}
     </pixiContainer>
   );
 }
