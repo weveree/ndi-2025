@@ -17,7 +17,7 @@ export default function HUD() {
         <span>
           <FaServer className='text-red-600' />
           <p>{data.proServer}</p>
-          <p className='text-xs animate-ping text-red-500'>{data.proServer*-5}$</p>
+          <p className='text-xs animate-ping text-red-500'>{data.proServer*-25}$</p>
         </span>
         <span>
           <FaServer className='text-green-600' />

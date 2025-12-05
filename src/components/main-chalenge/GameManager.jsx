@@ -49,12 +49,10 @@ export default function GameManager({ children }) {
   }
 
   function loop() {
-    changeMoney(-1);
-    changeMoney(50*data.fossServer);
-    changeMoney(-5*data.proServer);
-
-
-    console.log(data.money);
+    setData((prev)=>({
+     ...prev,
+     money:prev.money-1+50*prev.fossServer+ -25*prev.proServer
+    }))
     const alertTypes = Object.keys(ALERTS);
 
     if (Math.random() < 0.2) {
