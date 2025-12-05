@@ -273,10 +273,10 @@ export default function MainMap() {
     };
   }, [app, app.renderer, camera.x, camera.y, camera.scale]);
 
-  function getRandom(index,type) {
-    let alea = Math.floor(Math.random() * ALERTS[type][index].length);
+  function getRandom(type) {
+    let alea = Math.floor(Math.random() * ALERTS[type][0].length);
 
-    return ALERTS[type][index][alea];
+    return [ALERTS[type][0][alea],ALERTS[type][1][alea]];
   }
 
   return (
@@ -291,7 +291,7 @@ export default function MainMap() {
           onClick={() => {
             setCurrentModal({
               ...alert,
-              altenatives:[getRandom(0,alert.type), getRandom(1,alert.type)]
+              altenatives:getRandom(alert.type)
             })
           }}
         />
