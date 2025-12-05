@@ -1,3 +1,19 @@
+import warningModel from '@/assets/models/low_poly_computer.glb?url';
+import bellModel from '@/assets/models/low_poly_office_chair.glb?url';
+import loudspeakerModel from '@/assets/models/cloud_file_storage.glb?url';
+import moneyBagModel from '@/assets/models/webcam.glb?url';
+import policeLampModel from '@/assets/models/low_poly_computer.glb?url';
+import questionMarkModel from '@/assets/models/student_penguin.glb?url';
+
+export const ALERT_MODELS = {
+  warning: { url: warningModel, scale: 1, author: {url: 'https://sketchfab.com/glcalde', name: 'glcalde'} },
+  bell: { url: bellModel, scale: 2, author: {url: 'https://sketchfab.com/NoodleBaguette', name: 'NoodleBaguette'} },
+  loudspeaker: { url: loudspeakerModel, scale: 1, author: {url: 'https://sketchfab.com/aniljaco', name: 'aniljaco'} },
+  'money-bag': { url: moneyBagModel, scale: 2, author: {url: 'https://sketchfab.com/bswlife', name: 'bswlife'} },
+  'police-lamp': { url: policeLampModel, scale: 1, author: {url: 'https://sketchfab.com/NoodleBaguette', name: 'NoodleBaguette'} },
+  'question-mark': { url: questionMarkModel, scale: 0.01, author: {url: 'https://sketchfab.com/daynke', name: 'daynke'} },
+};
+
 export const ALERT_POSITIONS = [
   { x: -40, y: -30 },
   { x: -400, y: -130 },
@@ -12,6 +28,7 @@ export const ALERT_POSITIONS = [
   { x: -440, y: -30 },
   { x: -200, y: 230 },
 ];
+
 export const ALERTS = {
   warning: [
     [
