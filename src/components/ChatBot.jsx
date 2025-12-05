@@ -102,8 +102,7 @@ export default function ChatBot() {
 
         IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées débiles !`,
       },
-    ],
-    { model: 'openai' }
+    ]
   );
 
   const handleSend = () => {
