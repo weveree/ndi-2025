@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
+import SnakeGame from './components/game/SnakeGame';
 import './index.css';
 import NotFound from './routes/404';
 import Home from './routes/Home';
