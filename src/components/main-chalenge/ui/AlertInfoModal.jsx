@@ -21,6 +21,7 @@ export default function AlertInfoModal() {
         <section className="size-full flex flex-col gap-3.5">
           {currentModal.altenatives.map((e, i) => (
             <article
+            key={i}
               onClick={() => {
                 setCurrentModal(null);
                 changeMoney(e.price);
