@@ -7,6 +7,8 @@ export default function GameManager({ children }) {
   const [data, setData] = useState({
     money: 0,
     energy: 0,
+    fossServer:0,
+    proServer:0
   });
 
   const [alerts, setAlerts] = useState([]);
@@ -26,11 +28,17 @@ export default function GameManager({ children }) {
     }));
   }
 
+  function changeFossCount(amount) {
+    changeAttribute('fossServer', (prev) => prev + amount);
+  }
+  function changeProServerCount(amount) {
+    changeAttribute('proServer', (prev) => prev + amount);
+  }
   function changeMoney(money) {
-    changeAttribute('money', (prev) => prev - money);
+    changeAttribute('money', (prev) => prev + money);
   }
   function changeEnergy(energy) {
-    changeAttribute('energy', (prev) => prev - energy);
+    changeAttribute('energy', (prev) => prev + energy);
   }
 
   function addAlert(alert) {
@@ -41,7 +49,10 @@ export default function GameManager({ children }) {
   }
 
   function loop() {
-    changeMoney(50);
+    changeMoney(-1);
+    changeMoney(50*data.fossServer);
+    changeMoney(-5*data.proServer);
+
 
     console.log(data.money);
     const alertTypes = Object.keys(ALERTS);
@@ -52,7 +63,7 @@ export default function GameManager({ children }) {
   }
 
   return (
-    <GameManagerContext.Provider value={{ data, alerts, currentModal, setCurrentModal,changeMoney,changeEnergy,removeAlert }}>
+    <GameManagerContext.Provider value={{ data, alerts, currentModal, setCurrentModal,changeMoney,changeEnergy,removeAlert,changeFossCount,changeProServerCount }}>
       {children}
     </GameManagerContext.Provider>
   );

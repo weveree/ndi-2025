@@ -4,7 +4,7 @@ import { ALERTS } from '../constants';
 import { MdClose } from 'react-icons/md';
 
 export default function AlertInfoModal() {
-  let { currentModal, setCurrentModal, changeMoney, changeEnergy,removeAlert } = useGameManager();
+  let { currentModal, setCurrentModal, changeMoney, changeEnergy,removeAlert,changeFossCount,changeProServerCount } = useGameManager();
 
   if (!currentModal) return;
   console.log(ALERTS[currentModal.type]);
@@ -26,7 +26,8 @@ export default function AlertInfoModal() {
                 setCurrentModal(null);
                 changeMoney(e.price);
                 changeEnergy(e.energy);
-                removeAlert(currentModal)
+                removeAlert(currentModal);
+                i%2==0?changeProServerCount(1):changeFossCount(1);
               }}
               className={`rounded-2xl w-full h-1/3 ${i % 2 == 0 ? 'bg-[#FF5050]' : 'bg-[#63d300]'} p-3 flex flex-row justify-between items-center cursor-pointer ${i % 2 == 0 ? 'hover:bg-red-400' : 'hover:bg-[#489b00]'} transition-all`}
             >
