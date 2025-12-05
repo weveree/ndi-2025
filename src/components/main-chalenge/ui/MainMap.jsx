@@ -4,6 +4,7 @@ import { Assets, FederatedPointerEvent, FederatedWheelEvent, Texture } from 'pix
 import { useEffect, useRef, useState } from 'react';
 import { useGameManager } from '../GameManager';
 import AlertButton from './AlertButton';
+import { ALERTS } from '../constants';
 
 function screenToWorld(cameraState, screenX, screenY) {
   return {
@@ -20,7 +21,7 @@ function distance(p1, p2) {
 
 export default function MainMap() {
   const { app } = useApplication();
-  const { alerts } = useGameManager();
+  const { alerts,setCurrentModal } = useGameManager();
 
   const spriteRef = useRef(null);
 
@@ -272,6 +273,12 @@ export default function MainMap() {
     };
   }, [app, app.renderer, camera.x, camera.y, camera.scale]);
 
+  function getRandom(index,type) {
+    let alea = Math.floor(Math.random() * ALERTS[type][index].length);
+
+    return ALERTS[type][index][alea];
+  }
+
   return (
     <pixiContainer scale={camera.scale} x={camera.x} y={camera.y}>
       <pixiSprite ref={spriteRef} anchor={0.5} texture={texture} />
@@ -282,7 +289,10 @@ export default function MainMap() {
           x={alert.x}
           y={alert.y}
           onClick={() => {
-            console.log(`Alert ${alert.id} clicked`);
+            setCurrentModal({
+              ...alert,
+              altenatives:[getRandom(0,alert.type), getRandom(1,alert.type)]
+            })
           }}
         />
       ))}
