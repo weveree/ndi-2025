@@ -19,7 +19,7 @@ export default function usePollinationBot(initialMessages = [], options = {}) {
         },
         body: JSON.stringify({
           messages: newMessages,
-          model: options.model || 'openai',
+          model: options.model || 'qwen-coder',
         }),
       });
 
