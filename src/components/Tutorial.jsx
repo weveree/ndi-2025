@@ -45,7 +45,7 @@ export default function Tutorial() {
   if (!showTuto) return;
   else
     return (
-      <section className="size-full absolute z-30 flex justify-center items-center ">
+      <section className="size-full absolute flex justify-center items-center bg-gray-400/70 z-50 ">
         <section className="w-2/3 h-2/3 bg-white rounded-2xl">
           {pages[pageNumber]}
           <footer className="flex justify-between items-center p-3.5">
@@ -56,7 +56,7 @@ export default function Tutorial() {
                   <span
                     onClick={() => setPageNumber(i)}
                     key={i}
-                    className={`${pageNumber == i ? 'text-blue-500' : 'text-gray-400'} text-4xl`}
+                    className={`${pageNumber == i ? 'text-blue-500' : 'text-gray-400'} text-4xl select-none cursor-pointer hover:text-blue-300`}
                   >
                     •
                   </span>
