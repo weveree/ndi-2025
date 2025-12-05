@@ -38,12 +38,11 @@ export default function AlertInfoModal() {
                 <p className="text-2xl text-white">{e?.description}</p>
               </aside>
               <aside className="flex flex-row text-2xl text-white cursor-pointer p-2 items-center justify-baseline gap-4 w-1/4 *:flex *:flex-row *:w-full">
-                <p className='flex items-center justify-center'>
-                  <FaMoneyBill className="text-green-500 text-2xl " />{' '}
-                  {e?.price} $
+                <p className="flex items-center justify-center">
+                  <FaMoneyBill className="text-green-500 text-2xl " /> {e?.price} $
                 </p>
                 <p>
-                  <MdBolt className="text-yellow-400 text-2xl" /> 
+                  <MdBolt className="text-yellow-400 text-2xl" />
                   {e?.energy}
                 </p>
               </aside>

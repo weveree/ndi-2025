@@ -21,7 +21,7 @@ function distance(p1, p2) {
 
 export default function MainMap() {
   const { app } = useApplication();
-  const { alerts,setCurrentModal } = useGameManager();
+  const { alerts, setCurrentModal } = useGameManager();
 
   const spriteRef = useRef(null);
 
@@ -276,7 +276,7 @@ export default function MainMap() {
   function getRandom(type) {
     let alea = Math.floor(Math.random() * ALERTS[type][0].length);
 
-    return [ALERTS[type][0][alea],ALERTS[type][1][alea]];
+    return [ALERTS[type][0][alea], ALERTS[type][1][alea]];
   }
 
   return (
@@ -291,8 +291,8 @@ export default function MainMap() {
           onClick={() => {
             setCurrentModal({
               ...alert,
-              altenatives:getRandom(alert.type)
-            })
+              altenatives: getRandom(alert.type),
+            });
           }}
         />
       ))}

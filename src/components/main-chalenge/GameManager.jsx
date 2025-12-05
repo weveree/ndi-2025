@@ -7,8 +7,8 @@ export default function GameManager({ children }) {
   const [data, setData] = useState({
     money: 1000000,
     energy: 0,
-    fossServer:0,
-    proServer:0
+    fossServer: 0,
+    proServer: 0,
   });
 
   const [alerts, setAlerts] = useState([]);
@@ -49,10 +49,10 @@ export default function GameManager({ children }) {
   }
 
   function loop() {
-    setData((prev)=>({
-     ...prev,
-     money:prev.money-1+50*prev.fossServer+ -25*prev.proServer
-    }))
+    setData((prev) => ({
+      ...prev,
+      money: prev.money - 1 + 50 * prev.fossServer + -25 * prev.proServer,
+    }));
     const alertTypes = Object.keys(ALERTS);
 
     if (Math.random() < 0.2) {
@@ -70,7 +70,19 @@ export default function GameManager({ children }) {
   }
 
   return (
-    <GameManagerContext.Provider value={{ data, alerts, currentModal, setCurrentModal,changeMoney,changeEnergy,removeAlert,changeFossCount,changeProServerCount }}>
+    <GameManagerContext.Provider
+      value={{
+        data,
+        alerts,
+        currentModal,
+        setCurrentModal,
+        changeMoney,
+        changeEnergy,
+        removeAlert,
+        changeFossCount,
+        changeProServerCount,
+      }}
+    >
       {children}
     </GameManagerContext.Provider>
   );

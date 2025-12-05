@@ -13,16 +13,16 @@ export default function HUD() {
       <div>
         <MdBolt className="text-yellow-400 text-2xl" /> <p className="font-bold text-2xl">{data.energy}%</p>
       </div>
-      <article className='flex flex-row *:flex *:flex-row *:items-center gap-6 *:gap-2'>
+      <article className="flex flex-row *:flex *:flex-row *:items-center gap-6 *:gap-2">
         <span>
-          <FaServer className='text-red-600' />
+          <FaServer className="text-red-600" />
           <p>{data.proServer}</p>
-          <p className='text-xs animate-ping text-red-500'>{data.proServer*-25}$</p>
+          <p className="text-xs animate-ping text-red-500">{data.proServer * -25}$</p>
         </span>
         <span>
-          <FaServer className='text-green-600' />
+          <FaServer className="text-green-600" />
           <p>{data.fossServer}</p>
-          <p className='text-xs animate-ping text-green-500'>+{data.fossServer*50}$</p>
+          <p className="text-xs animate-ping text-green-500">+{data.fossServer * 50}$</p>
         </span>
       </article>
     </section>

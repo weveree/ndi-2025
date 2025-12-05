@@ -14,7 +14,7 @@ export default function usePollinationBot(initialMessages = [], options = {}) {
       const response = await fetch('https://text.pollinations.ai/', {
         method: 'POST',
         headers: {
-          'Accept': '*/*',
+          Accept: '*/*',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -26,25 +26,16 @@ export default function usePollinationBot(initialMessages = [], options = {}) {
       if (response.ok) {
         // Get the text from the response
         const assistantMessage = await response.text();
-        
+
         // Add assistant's response to messages
-        setMessages(prev => [
-          ...prev,
-          { role: 'assistant', content: assistantMessage }
-        ]);
+        setMessages((prev) => [...prev, { role: 'assistant', content: assistantMessage }]);
       } else {
         console.error('API request failed:', response.status);
-        setMessages(prev => [
-          ...prev,
-          { role: 'assistant', content: 'Désolé, une erreur est survenue.' }
-        ]);
+        setMessages((prev) => [...prev, { role: 'assistant', content: 'Désolé, une erreur est survenue.' }]);
       }
     } catch (error) {
       console.error('Error calling Pollinations API:', error);
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: 'Erreur de connexion.' }
-      ]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: 'Erreur de connexion.' }]);
     } finally {
       setIsLoading(false);
     }
@@ -53,6 +44,6 @@ export default function usePollinationBot(initialMessages = [], options = {}) {
   return {
     messages,
     sendUserMessage,
-    isLoading
+    isLoading,
   };
 }

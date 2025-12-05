@@ -113,9 +113,8 @@ export default function ChatBot() {
       className="bg-blue-500 absolute right-0 bottom-0 rounded-full w-20 h-20 m-7 cursor-pointer z-50 flex justify-center items-center group"
       onClick={() => setActive(true)}
     >
-      <FaMessage className='text-white text-center text-2xl'/>
-      <p className='absolute -top-10 bg-black/30 rounded-2xl p-1 text-white'>ChatBot</p>
-
+      <FaMessage className="text-white text-center text-2xl" />
+      <p className="absolute -top-10 bg-black/30 rounded-2xl p-1 text-white">ChatBot</p>
     </section>
   ) : (
     <section
