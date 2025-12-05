@@ -42,7 +42,13 @@ export default function GameManager({ children }) {
   }
 
   function addAlert(alert) {
-    setAlerts((prev) => [...prev, { id: crypto.randomUUID(), ...alert }]);
+    setAlerts((prev) => {
+      if (prev.find((a) => a.x === alert.x && a.y === alert.y)) {
+        return prev;
+      }
+
+      return [...prev, { id: crypto.randomUUID(), ...alert }];
+    });
   }
   function removeAlert(alert) {
     setAlerts((prev) => prev.filter((el) => el.id !== alert.id));
@@ -57,10 +63,6 @@ export default function GameManager({ children }) {
 
     if (Math.random() < 0.2) {
       const position = ALERT_POSITIONS[Math.floor(Math.random() * ALERT_POSITIONS.length)];
-
-      if (alerts.find((a) => a.x === position.x && a.y === position.y)) {
-        return;
-      }
 
       addAlert({
         type: alertTypes[Math.floor(Math.random() * alertTypes.length)],
