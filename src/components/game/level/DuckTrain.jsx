@@ -11,7 +11,7 @@ export default function DuckTrain({ onNextLevel }) {
   });
 
   useEffect(() => {
-    if (game.score > 1) {
+    if (game.score > 6) {
       onNextLevel();
     }
   }, [game.score, onNextLevel]);

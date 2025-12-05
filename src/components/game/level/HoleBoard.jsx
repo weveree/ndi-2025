@@ -6,7 +6,7 @@ export default function HoleGame({ onNextLevel }) {
   const game = useSnakeGame({ enableHoles: true, holeCount: 15 });
 
   useEffect(() => {
-    if (game.score > 1) onNextLevel();
+    if (game.score > 8) onNextLevel();
   }, [game.score, onNextLevel]);
 
   return (

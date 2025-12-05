@@ -6,7 +6,7 @@ export default function Snake({ onNextLevel }) {
   const game = useSnakeGame();
 
   useEffect(() => {
-    if (game.score > 1) onNextLevel();
+    if (game.score > 3) onNextLevel();
   }, [game.score, onNextLevel]);
 
   const appearance = {

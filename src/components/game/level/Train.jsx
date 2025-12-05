@@ -6,7 +6,7 @@ export default function Train({ onNextLevel }) {
   const game = useSnakeGame({ enableTrain: true });
 
   useEffect(() => {
-    if (game.score > 1) onNextLevel();
+    if (game.score > 6) onNextLevel();
   }, [game.score, onNextLevel]);
 
   return (

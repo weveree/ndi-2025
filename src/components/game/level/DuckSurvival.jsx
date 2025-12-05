@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import GameBoard from '../GameBoard';
 import { useSnakeGame } from '../useSnakeGame';
 
@@ -10,9 +11,15 @@ export default function DuckSurvival({ onNextLevel }) {
     holeCount: 5,
 
     enableEnemies: true,
-    enemySpawnRate: 0.1,
+    enemySpawnRate: 0.075,
     enemySpeedDelay: 2,
   });
+
+  useEffect(() => {
+    if (game.score > 6) {
+      onNextLevel();
+    }
+  }, [game.score, onNextLevel]);
 
   return (
     <GameBoard
