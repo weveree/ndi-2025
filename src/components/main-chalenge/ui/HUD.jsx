@@ -17,10 +17,12 @@ export default function HUD() {
         <span>
           <FaServer className='text-red-600' />
           <p>{data.proServer}</p>
+          <p className='text-xs animate-ping text-red-500'>{data.proServer*-5}$</p>
         </span>
         <span>
           <FaServer className='text-green-600' />
           <p>{data.fossServer}</p>
+          <p className='text-xs animate-ping text-green-500'>+{data.fossServer*50}$</p>
         </span>
       </article>
     </section>

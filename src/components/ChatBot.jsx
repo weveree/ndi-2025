@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaMessage } from 'react-icons/fa6';
 import { MdClose, MdSend } from 'react-icons/md';
 
 // Fixed usePollinationBot hook - include this in your hooks file
@@ -109,9 +110,13 @@ export default function ChatBot() {
 
   return !active ? (
     <section
-      className="bg-blue-500 absolute right-0 bottom-0 rounded-full w-20 h-20 m-7 cursor-pointer z-50"
+      className="bg-blue-500 absolute right-0 bottom-0 rounded-full w-20 h-20 m-7 cursor-pointer z-50 flex justify-center items-center group"
       onClick={() => setActive(true)}
-    ></section>
+    >
+      <FaMessage className='text-white text-center text-2xl'/>
+      <p className='absolute -top-10 bg-black/30 rounded-2xl p-1 text-white'>ChatBot</p>
+
+    </section>
   ) : (
     <section
       className={`${!active ? 'h-0' : 'h-2/3'} transition-all z-50 absolute right-0 bottom-0 w-2/5 bg-white shadow-2xl flex flex-col p-3 rounded-tl-2xl rounded-tr-2xl`}
