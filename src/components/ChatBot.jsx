@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { MdClose, MdSend } from 'react-icons/md';
 
 // Fixed usePollinationBot hook - include this in your hooks file
@@ -15,7 +15,7 @@ function usePollinationBot(initialMessages = [], options = {}) {
       const response = await fetch('https://text.pollinations.ai/', {
         method: 'POST',
         headers: {
-          'Accept': '*/*',
+          Accept: '*/*',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -26,23 +26,14 @@ function usePollinationBot(initialMessages = [], options = {}) {
 
       if (response.ok) {
         const assistantMessage = await response.text();
-        setMessages(prev => [
-          ...prev,
-          { role: 'assistant', content: assistantMessage }
-        ]);
+        setMessages((prev) => [...prev, { role: 'assistant', content: assistantMessage }]);
       } else {
         console.error('API request failed:', response.status);
-        setMessages(prev => [
-          ...prev,
-          { role: 'assistant', content: 'Désolé, une erreur est survenue.' }
-        ]);
+        setMessages((prev) => [...prev, { role: 'assistant', content: 'Désolé, une erreur est survenue.' }]);
       }
     } catch (error) {
       console.error('Error calling Pollinations API:', error);
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: 'Erreur de connexion.' }
-      ]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: 'Erreur de connexion.' }]);
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +42,7 @@ function usePollinationBot(initialMessages = [], options = {}) {
   return {
     messages,
     sendUserMessage,
-    isLoading
+    isLoading,
   };
 }
 
@@ -61,11 +52,10 @@ export default function ChatBot() {
   const [active, setActive] = useState(false);
 
   // FIXED: Destructure the return value from the hook
-  const { messages, sendUserMessage, isLoading } = usePollinationBot(
-    [
-      {
-        role: 'system',
-        content: `Tu es l'assistant IA INCOMPÉTENT d'une école. Tu COMPRENDS MAL mais tu essaies quand même de donner des conseils sur l'école.
+  const { messages, sendUserMessage, isLoading } = usePollinationBot([
+    {
+      role: 'system',
+      content: `Tu es l'assistant IA INCOMPÉTENT d'une école. Tu COMPRENDS MAL mais tu essaies quand même de donner des conseils sur l'école.
 
         COMMENT TU FONCTIONNES :
         - Tu DÉTOURNES les mots mais tu restes dans le thème de l'école
@@ -101,9 +91,8 @@ export default function ChatBot() {
         - Reste dans le contexte ÉCOLE
 
         IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées débiles !`,
-      },
-    ]
-  );
+    },
+  ]);
 
   const handleSend = () => {
     if (currentMessage.trim()) {
@@ -128,14 +117,11 @@ export default function ChatBot() {
       className={`${!active ? 'h-0' : 'h-2/3'} transition-all z-50 absolute right-0 bottom-0 w-2/5 bg-white shadow-2xl flex flex-col p-3 rounded-tl-2xl rounded-tr-2xl`}
     >
       <header className="bg-white w-full p-2 flex flex-row justify-between">
-        <MdClose 
-          className="text-2xl cursor-pointer hover:text-red-500" 
-          onClick={() => setActive(false)} 
-        />
+        <MdClose className="text-2xl cursor-pointer hover:text-red-500" onClick={() => setActive(false)} />
         <h1 className="text-black font-semibold">Chat'Bruti</h1>
         <hr className="opacity-35" />
       </header>
-      
+
       <section
         className={`${!active ? 'h-0 overflow-hidden' : 'h-full'} transition-all flex flex-col gap-2 overflow-y-auto p-2`}
       >
@@ -145,15 +131,13 @@ export default function ChatBot() {
             <article
               key={i}
               className={`${
-                e.role === 'assistant' 
-                  ? 'self-start bg-gray-100' 
-                  : 'self-end bg-blue-500 text-white'
+                e.role === 'assistant' ? 'self-start bg-gray-100' : 'self-end bg-blue-500 text-white'
               } p-2 border shadow/10 rounded-2xl max-w-[90%]`}
             >
               {e.content}
             </article>
           ))}
-        
+
         {isLoading && (
           <article className="self-start bg-gray-100 p-2 border shadow/10 rounded-2xl max-w-[90%] animate-pulse">
             Thinking...
