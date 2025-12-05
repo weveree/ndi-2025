@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SnakeGame from './game/SnakeGame';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { useGameManager } from './main-chalenge/GameManager';
+import { useGameManager } from './main-challenge/GameManager';
+
 export default function EndScreen() {
   let [snake, setSnake] = useState(false);
   let { data } = useGameManager();

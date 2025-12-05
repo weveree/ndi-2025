@@ -9,11 +9,12 @@ export default function GameManager({ children }) {
     energy: 0,
     fossServer: 0,
     proServer: 0,
-    ended:false
+    ended: false,
   });
 
   const [alerts, setAlerts] = useState([]);
   const [currentModal, setCurrentModal] = useState(null);
+  const [displayRubeGoldberg, setDisplayRubeGoldberg] = useState(false);
 
   useEffect(() => {
     let inter = setInterval(() => loop(), 1000);
@@ -60,11 +61,10 @@ export default function GameManager({ children }) {
       ...prev,
       money: prev.money - 1 + 50 * prev.fossServer + -25 * prev.proServer,
     }));
-    if(data.money == 0)
-    {
-      setData((prev)=>({
-        ended:true
-      }))
+    if (data.money == 0) {
+      setData({
+        ended: true,
+      });
     }
     const alertTypes = Object.keys(ALERTS);
 
@@ -84,12 +84,14 @@ export default function GameManager({ children }) {
         data,
         alerts,
         currentModal,
+        displayRubeGoldberg,
         setCurrentModal,
         changeMoney,
         changeEnergy,
         removeAlert,
         changeFossCount,
         changeProServerCount,
+        setDisplayRubeGoldberg,
       }}
     >
       {children}

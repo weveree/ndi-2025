@@ -5,8 +5,16 @@ import { useGameManager } from '../GameManager';
 import { ALERT_MODELS } from '../constants';
 
 export default function AlertInfoModal() {
-  let { currentModal, setCurrentModal, changeMoney, changeEnergy, removeAlert, changeFossCount, changeProServerCount } =
-    useGameManager();
+  let {
+    currentModal,
+    setCurrentModal,
+    changeMoney,
+    changeEnergy,
+    removeAlert,
+    changeFossCount,
+    changeProServerCount,
+    setDisplayRubeGoldberg,
+  } = useGameManager();
 
   if (!currentModal) return;
 
@@ -30,11 +38,15 @@ export default function AlertInfoModal() {
               </div>
               <article
                 onClick={() => {
-                  setCurrentModal(null);
-                  changeMoney(e.price);
-                  changeEnergy(e.energy);
-                  removeAlert(currentModal);
                   i % 2 == 0 ? changeProServerCount(1) : changeFossCount(1);
+                  if (Math.random() < 0.3) {
+                    setDisplayRubeGoldberg(true);
+                  } else {
+                    setCurrentModal(null);
+                    changeMoney(e.price);
+                    changeEnergy(e.energy);
+                    removeAlert(currentModal);
+                  }
                 }}
                 className={`rounded-2xl w-full ${i % 2 == 0 ? 'bg-[#FF5050]' : 'bg-[#63d300]'} p-3 flex flex-row justify-between items-center cursor-pointer ${i % 2 == 0 ? 'hover:bg-red-400' : 'hover:bg-[#489b00]'} transition-all`}
               >

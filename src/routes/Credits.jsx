@@ -1,4 +1,4 @@
-import { ALERT_MODELS } from '@/components/main-chalenge/constants';
+import { ALERT_MODELS } from '@/components/main-challenge/constants';
 
 export default function Credits() {
   return (
