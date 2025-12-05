@@ -7,7 +7,8 @@ import { Application, extend } from '@pixi/react';
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { useRef } from 'react';
 import Tutorial from '../components/Tutorial';
-
+import SnakeGame from '../components/game/SnakeGame';
+import EndScreen from '../components/EndScreen';
 extend({
   Container,
   Graphics,
@@ -18,6 +19,8 @@ export default function Home() {
 
   return (
     <GameManager>
+      {/* <SnakeGame/> */}
+      <EndScreen/>
       <Tutorial/>
       <ChatBot />
       <HUD />

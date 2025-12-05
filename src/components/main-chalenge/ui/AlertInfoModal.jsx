@@ -14,7 +14,7 @@ export default function AlertInfoModal() {
     <section className="absolute left-0 top-0 size-full m-auto z-20 flex justify-center items-center ">
       <section className="m-auto w-3/4 h-3/4 bg-white rounded-2xl p-8 relative">
         <button className="absolute right-0 top-0">
-          <MdClose className="text-2xl m-4 cursor-pointer" onClick={() => setCurrentModal(null)} />
+          <MdClose className="text-2xl rounded-full m-4 cursor-pointer" onClick={() => setCurrentModal(null)} />
         </button>
         <header>
           <h1 className="text-4xl font-semibold">Erreur</h1>

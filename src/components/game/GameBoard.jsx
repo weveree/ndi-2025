@@ -89,7 +89,7 @@ const GameBoard = ({
           <div className={styles.overlay}>
             <h2>Game Over!</h2>
             <p>Score final : {score}</p>
-            <button onClick={onRestart}>Rejouer</button>
+            <button className={styles.button} onClick={onRestart}>Rejouer</button>
           </div>
         )}
       </div>
