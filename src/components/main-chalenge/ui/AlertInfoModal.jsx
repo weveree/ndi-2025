@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import { useGameManager } from '../GameManager';
 
 export default function AlertInfoModal() {
-    let {currentModal} = useContext()
+  let { currentModal } = useGameManager();
   return (
     <section className="absolute left-0 top-0 size-full m-auto z-20 flex justify-center items-center ">
       <section className="m-auto w-3/4 h-3/4 bg-white rounded-2xl p-8">
