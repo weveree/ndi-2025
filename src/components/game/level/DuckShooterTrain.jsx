@@ -1,36 +1,30 @@
-import { useEffect } from 'react';
 import GameBoard from '../GameBoard';
 import { useSnakeGame } from '../useSnakeGame';
 
-export default function DuckShooter({ onNextLevel }) {
+export default function DuckShooterTrain({ onNextLevel }) {
   const game = useSnakeGame({
     enableShooting: true,
     enableTrain: true,
-    trainSpawnRate: 0.15,
+    enableVerticalTrain: true,
+    trainSpawnRate: 0.25,
     enableHoles: true,
     holeCount: 10,
   });
 
-  useEffect(() => {
-    if (game.score > 1) {
-      onNextLevel();
-    }
-  }, [game.score, onNextLevel]);
-
   return (
     <GameBoard
-      title="🦆 Duck Shooter"
+      title="🦆 Duck & Crazy Trains"
       {...game}
       onRestart={game.restartGame}
-      instruction="Appuyez sur la touche 'F' pour tirer !"
+      instruction="Attention aux trains dans TOUS les sens ! 'F' pour tirer."
       emojis={{
         head: '🦆',
         body: '🪶',
         food: '🎯',
         egg: '🥚',
         hole: '',
-        trainEngine: '🔥',
-        trainBody: '🔥',
+        trainEngine: '🚄',
+        trainBody: '🚃',
       }}
     />
   );

@@ -1,42 +1,38 @@
-// useSnakeGame.js
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { GRID_SIZE, DIRECTIONS, INITIAL_SPEED } from './gameConstants';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { DIRECTIONS, GRID_SIZE, INITIAL_SPEED } from './gameConstants';
 
 const getRandomPosition = () => ({
   x: Math.floor(Math.random() * GRID_SIZE),
   y: Math.floor(Math.random() * GRID_SIZE),
 });
 
-// AJOUT DE LA PROP 'enableShooting'
 export const useSnakeGame = ({ 
   enableHoles = false, 
   holeCount = 5, 
   enableTrain = false, 
+  enableVerticalTrain = false,
   trainSpawnRate = 0.05,
-  enableShooting = false // NOUVEAU
+  enableShooting = false 
 } = {}) => {
   const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
   const [food, setFood] = useState({ x: 15, y: 15 });
   const [holes, setHoles] = useState([]);
+  
   const [train, setTrain] = useState([]);
-  // NOUVEAU : État pour les projectiles (œufs)
-  // Chaque œuf est un objet : { x, y, direction: {x,y} }
-  const [eggs, setEggs] = useState([]); 
 
+  const [trainDir, setTrainDir] = useState('H'); 
+
+  const [eggs, setEggs] = useState([]); 
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
   const directionRef = useRef(DIRECTIONS.RIGHT);
-  // NOUVEAU : On a besoin de la position actuelle de la tête pour savoir d'où tirer
-  // On utilise une ref pour y accéder dans le useEffect du clavier sans re-déclencher le hook
-  const snakeHeadRef = useRef(snake[0]); 
+  const snakeHeadRef = useRef(snake[0]);
 
-  // Met à jour la ref à chaque mouvement du serpent
   useEffect(() => {
     snakeHeadRef.current = snake[0];
   }, [snake]);
-
 
   const generateValidPosition = useCallback((occupiedPositions) => {
     let position;
@@ -51,55 +47,76 @@ export const useSnakeGame = ({
     return position;
   }, []);
 
-  // --- LOGIQUE DU TRAIN ---
   const spawnTrain = () => {
-    const row = Math.floor(Math.random() * GRID_SIZE);
-    return [{x: -1, y: row}, {x: -2, y: row}, {x: -3, y: row}, {x: -4, y: row}, {x: -5, y: row}];
+
+    const isVertical = enableVerticalTrain && Math.random() > 0.5;
+
+    if (isVertical) {
+        setTrainDir('V');
+        const col = Math.floor(Math.random() * GRID_SIZE);
+
+        return [
+            {x: col, y: -1}, 
+            {x: col, y: -2}, 
+            {x: col, y: -3}, 
+            {x: col, y: -4}, 
+            {x: col, y: -5}
+        ];
+    } else {
+        setTrainDir('H');
+        const row = Math.floor(Math.random() * GRID_SIZE);
+        return [
+            {x: -1, y: row}, 
+            {x: -2, y: row}, 
+            {x: -3, y: row}, 
+            {x: -4, y: row}, 
+            {x: -5, y: row}
+        ];
+    }
   };
 
-  const moveTrain = (currentTrain) => {
+  const moveTrain = (currentTrain, currentDir) => {
     if (currentTrain.length === 0) return [];
+    
     const lastWagon = currentTrain[currentTrain.length - 1];
-    if (lastWagon.x >= GRID_SIZE) return []; 
-    return currentTrain.map(segment => ({ ...segment, x: segment.x + 1 }));
+    
+    if (currentDir === 'H' && lastWagon.x >= GRID_SIZE) return [];
+    if (currentDir === 'V' && lastWagon.y >= GRID_SIZE) return [];
+
+    return currentTrain.map(segment => ({ 
+        x: segment.x + (currentDir === 'H' ? 1 : 0), 
+        y: segment.y + (currentDir === 'V' ? 1 : 0) 
+    }));
   };
-  
-  // --- NOUVEAU : LOGIQUE DES ŒUFS ---
+
   const fireEgg = useCallback(() => {
     if (!enableShooting || gameOver || isPaused) return;
-    
     const currentHead = snakeHeadRef.current;
     const currentDir = directionRef.current;
-
-    // L'œuf apparaît sur la case *devant* le canard
     const startPos = {
         x: currentHead.x + currentDir.x,
         y: currentHead.y + currentDir.y,
-        direction: currentDir // L'œuf garde cette direction pour toujours
+        direction: currentDir
     };
-
     setEggs(prevEggs => [...prevEggs, startPos]);
   }, [enableShooting, gameOver, isPaused]);
 
-
   const initializeGame = useCallback(() => {
     const startSnake = [{ x: 10, y: 10 }];
-    snakeHeadRef.current = startSnake[0]; // Reset ref
-
+    snakeHeadRef.current = startSnake[0];
     let startHoles = [];
     if (enableHoles) {
       for (let i = 0; i < holeCount; i++) {
         startHoles.push(generateValidPosition([...startSnake, ...startHoles]));
       }
     }
-
     const startFood = generateValidPosition([...startSnake, ...startHoles]);
-
     setSnake(startSnake);
     setHoles(startHoles);
     setFood(startFood);
     setTrain([]);
-    setEggs([]); // Reset œufs
+    setTrainDir('H'); // Reset direction
+    setEggs([]);
     setScore(0);
     setGameOver(false);
     setIsPaused(false);
@@ -110,84 +127,54 @@ export const useSnakeGame = ({
     initializeGame();
   }, [initializeGame]);
 
-  // Gestion Clavier
   useEffect(() => {
     const handleKeyDown = (e) => {
-      switch (e.key) {
+        switch (e.key) {
         case 'ArrowUp': if (directionRef.current !== DIRECTIONS.DOWN) directionRef.current = DIRECTIONS.UP; break;
         case 'ArrowDown': if (directionRef.current !== DIRECTIONS.UP) directionRef.current = DIRECTIONS.DOWN; break;
         case 'ArrowLeft': if (directionRef.current !== DIRECTIONS.RIGHT) directionRef.current = DIRECTIONS.LEFT; break;
         case 'ArrowRight': if (directionRef.current !== DIRECTIONS.LEFT) directionRef.current = DIRECTIONS.RIGHT; break;
         case ' ': setIsPaused((prev) => !prev); break;
-        // NOUVEAU : Touche 'F' pour tirer
-        case 'f': 
-        case 'F': 
-            fireEgg(); 
-            break;
+        case 'f': case 'F': fireEgg(); break;
         default: break;
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [fireEgg]); // Ajout de fireEgg aux dépendances
+  }, [fireEgg]);
 
-  // BOUCLE DE JEU PRINCIPALE
   useEffect(() => {
     if (gameOver || isPaused) return;
 
     const gameLoop = setInterval(() => {
-      
-      // --- 1. GESTION DES ŒUFS (Projectiles) ---
       let currentEggs = eggs;
       let foodEatenByEgg = false;
-
       if (enableShooting && eggs.length > 0) {
-        // a. Déplacer les œufs
-        let movedEggs = eggs.map(egg => ({
-            ...egg,
-            x: egg.x + egg.direction.x,
-            y: egg.y + egg.direction.y
-        }));
-
-        // b. Vérifier les collisions des œufs
+        let movedEggs = eggs.map(egg => ({ ...egg, x: egg.x + egg.direction.x, y: egg.y + egg.direction.y }));
         currentEggs = movedEggs.filter(egg => {
-            // Sortie de grille ?
             if (egg.x < 0 || egg.x >= GRID_SIZE || egg.y < 0 || egg.y >= GRID_SIZE) return false;
-            // Touche un trou ?
             if (holes.some(h => h.x === egg.x && h.y === egg.y)) return false;
-            // Touche un train ?
             if (train.some(t => t.x === egg.x && t.y === egg.y)) return false;
-            
-            // Touche la nourriture ? (LE BUT)
-            if (egg.x === food.x && egg.y === food.y) {
-                foodEatenByEgg = true;
-                return false; // L'œuf disparaît après avoir touché la cible
-            }
-            
-            return true; // L'œuf continue sa route
+            if (egg.x === food.x && egg.y === food.y) { foodEatenByEgg = true; return false; }
+            return true;
         });
-        
-        setEggs(currentEggs); // Mise à jour des œufs restants
+        setEggs(currentEggs);
       }
 
-      // --- 2. GESTION DU SERPENT/CANARD (Classique) ---
       const currentHead = snake[0];
-      const newHead = {
-        x: currentHead.x + directionRef.current.x,
-        y: currentHead.y + directionRef.current.y,
-      };
+      const newHead = { x: currentHead.x + directionRef.current.x, y: currentHead.y + directionRef.current.y };
 
-      // Mouvement du Train
+
       let newTrain = train;
       if (enableTrain) {
         if (train.length > 0) {
-          newTrain = moveTrain(train);
+          newTrain = moveTrain(train, trainDir);
         } else if (Math.random() < trainSpawnRate) { 
           newTrain = spawnTrain();
+
         }
       }
 
-      // Collisions du serpent
       const hitWall = newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE;
       const hitSelf = snake.some(s => s.x === newHead.x && s.y === newHead.y);
       const hitHole = holes.some(h => h.x === newHead.x && h.y === newHead.y);
@@ -201,22 +188,12 @@ export const useSnakeGame = ({
 
       const newSnake = [newHead, ...snake];
 
-      // --- 3. GESTION DE LA NOURRITURE ---
-      // Cas A : Le serpent a mangé la nourriture avec sa bouche
       const snakeAteFood = newHead.x === food.x && newHead.y === food.y;
-
       if (snakeAteFood || foodEatenByEgg) {
         setScore(s => s + 1);
-        // On génère une nouvelle nourriture en évitant tous les obstacles, y compris les œufs en vol
         setFood(generateValidPosition([...newSnake, ...holes, ...newTrain, ...currentEggs]));
-        
-        // Si c'est l'œuf qui a mangé, le serpent ne grandit pas, donc on retire la queue.
-        // Si c'est le serpent qui a mangé, il grandit, donc on ne retire pas la queue.
-        if (foodEatenByEgg && !snakeAteFood) {
-             newSnake.pop();
-        }
+        if (foodEatenByEgg && !snakeAteFood) newSnake.pop();
       } else {
-        // Rien mangé, le serpent avance normalement
         newSnake.pop();
       }
 
@@ -226,9 +203,7 @@ export const useSnakeGame = ({
     }, INITIAL_SPEED);
 
     return () => clearInterval(gameLoop);
-    // Ajout de 'eggs' et 'enableShooting' aux dépendances
-  }, [snake, food, holes, train, eggs, gameOver, isPaused, enableTrain, trainSpawnRate, enableShooting, generateValidPosition]);
+  }, [snake, food, holes, train, trainDir, eggs, gameOver, isPaused, enableTrain, trainSpawnRate, enableShooting, generateValidPosition]); // Ajouter trainDir
 
-  // On retourne aussi 'eggs' pour l'affichage
   return { snake, food, holes, train, eggs, score, gameOver, isPaused, restartGame: initializeGame };
 };

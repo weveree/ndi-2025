@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Apple from './level/Apple';
 import DuckShooter from './level/DuckShooter';
+import DuckShooterTrain from './level/DuckShooterTrain';
 import DuckTrain from './level/DuckTrain';
 import HoleGame from './level/HoleBoard';
 import Snake from './level/Snake';
@@ -24,6 +25,8 @@ export default function SnakeGame() {
       return <DuckTrain onNextLevel={handleNextLevel} />;
     case 5:
       return <DuckShooter onNextLevel={handleNextLevel} />;
+    case 6:
+      return <DuckShooterTrain onNextLevel={handleNextLevel} />;
 
     default:
       return <Snake onNextLevel={handleNextLevel} />;

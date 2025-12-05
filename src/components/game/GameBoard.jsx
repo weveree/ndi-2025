@@ -16,6 +16,9 @@ const GameBoard = ({
   instruction = null,
   emojis = { head: '🐍', body: '🟩', food: '🍎', hole: '', trainEngine: '🚂', trainBody: '🚃', egg: '🥚' },
 }) => {
+  // Petite astuce pour savoir si le train est vertical pour l'affichage
+  const isTrainVertical = train.length > 1 && train[0].x === train[1].x;
+
   return (
     <div className={styles.container}>
       <h1>{title}</h1>
@@ -24,7 +27,6 @@ const GameBoard = ({
         {isPaused && <span className={styles.pauseBadge}>PAUSE</span>}
       </div>
 
-      {/* MODIFICATION ICI : On affiche le message seulement si l'instruction existe */}
       {instruction && (
         <p style={{ fontSize: '0.9rem', margin: '5px 0', color: '#f1c40f', fontWeight: 'bold' }}>{instruction}</p>
       )}
@@ -58,8 +60,14 @@ const GameBoard = ({
               {isBody && emojis.body}
               {isFood && emojis.food}
               {isHole && emojis.hole}
-              {isTrainEngine && emojis.trainEngine}
+
+              {/* Affichage du train */}
+              {isTrainEngine && (
+                // Optionnel : Vous pouvez tourner l'emoji si c'est vertical
+                <div style={{ transform: isTrainVertical ? 'rotate(90deg)' : 'none' }}>{emojis.trainEngine}</div>
+              )}
               {isTrainBody && emojis.trainBody}
+
               {isEgg && !isHead && !isFood && emojis.egg}
             </div>
           );
