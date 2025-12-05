@@ -12,5 +12,74 @@ export const ALERT_POSITIONS = [
   { x: -440, y: -30 },
   { x: -200, y: 230 },
 ];
-
-export const ALERT_TYPES = ['warning', 'bell', 'loudspeaker', 'money-bag', 'police-lamp', 'question-mark'];
+// TYPE
+//    ALTERNATIVE A
+//    ALTERNATIVE B
+export const ALERTS = {
+  'warning': [
+    [
+      {
+        name:"Google",
+        description:"this is a test description",
+        price:1400,
+        energy:40
+      }
+    ]
+    ,[]
+  ],
+  'bell': [
+    [
+      {
+        name:"Google",
+        description:"this is a test description",
+        price:1400,
+        energy:40
+      }
+    ]
+    ,[]
+  ],
+  'loudspeaker': [
+    [
+      {
+        name:"Google",
+        description:"this is a test description",
+        price:1400,
+        energy:40
+      }
+    ]
+    ,[]
+  ],
+  'money-bag': [
+    [
+      {
+        name:"Google",
+        description:"this is a test description",
+        price:1400,
+        energy:40
+      }
+    ]
+    ,[]
+  ],
+  'police-lamp': [
+    [
+      {
+        name:"Google",
+        description:"this is a test description",
+        price:1400,
+        energy:40
+      }
+    ]
+    ,[]
+  ],
+  'question-mark': [
+    [
+      {
+        name:"Google",
+        description:"this is a test description",
+        price:1400,
+        energy:40
+      }
+    ]
+    ,[]
+  ],
+};
