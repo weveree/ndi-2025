@@ -27,7 +27,7 @@ export default function DuckShooter({ onNextLevel }) {
         head: '🦆',
         body: '🪶',
         food: '🎯',
-        egg: '🥚',
+        shoot: '🥚',
         hole: '',
         trainEngine: '🔥',
         trainBody: '🔥',

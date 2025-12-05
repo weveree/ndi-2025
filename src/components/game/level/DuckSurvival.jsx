@@ -1,30 +1,34 @@
 import GameBoard from '../GameBoard';
 import { useSnakeGame } from '../useSnakeGame';
 
-export default function DuckShooter({ onNextLevel }) {
+export default function DuckSurvival({ onNextLevel }) {
   const game = useSnakeGame({
     enableShooting: true,
     enableTrain: true,
     enableVerticalTrain: true,
-    trainSpawnRate: 0.25,
     enableHoles: true,
-    holeCount: 10,
+    holeCount: 5,
+
+    enableEnemies: true,
+    enemySpawnRate: 0.1,
+    enemySpeedDelay: 2,
   });
 
   return (
     <GameBoard
-      title="🦆 Duck & Crazy Trains"
+      title="🦊 Survie"
       {...game}
       onRestart={game.restartGame}
-      instruction="Attention aux trains dans TOUS les sens ! 'F' pour tirer."
+      instruction="Tirez sur les Renards avec 'F' !"
       emojis={{
         head: '🦆',
         body: '🪶',
-        food: '🎯',
-        shoot: '🥚',
+        food: '',
+        shoot: '🔪',
         hole: '',
-        trainEngine: '🚄',
-        trainBody: '🚃',
+        trainEngine: '🔥',
+        trainBody: '🔥',
+        enemy: '🦊',
       }}
     />
   );

@@ -11,12 +11,21 @@ const GameBoard = ({
   food,
   holes,
   train = [],
-  eggs = [],
+  shoots = [],
+  enemies = [],
   onRestart,
   instruction = null,
-  emojis = { head: '🐍', body: '🟩', food: '🍎', hole: '', trainEngine: '🚂', trainBody: '🚃', egg: '🥚' },
+  emojis = {
+    head: '🐍',
+    body: '🟩',
+    food: '🍎',
+    hole: '',
+    trainEngine: '🚂',
+    trainBody: '🚃',
+    shoot: '🥚',
+    enemy: '',
+  },
 }) => {
-  // Petite astuce pour savoir si le train est vertical pour l'affichage
   const isTrainVertical = train.length > 1 && train[0].x === train[1].x;
 
   return (
@@ -52,7 +61,9 @@ const GameBoard = ({
           const isTrainEngine = trainIndex === 0;
           const isTrainBody = trainIndex > 0;
 
-          const isEgg = eggs.some((e) => e.x === x && e.y === y);
+          const isShoot = shoots.some((e) => e.x === x && e.y === y);
+
+          const isEnemy = enemies.some((e) => e.x === x && e.y === y);
 
           return (
             <div key={index} className={clsx(styles.cell, isHole && styles.hole)}>
@@ -61,14 +72,15 @@ const GameBoard = ({
               {isFood && emojis.food}
               {isHole && emojis.hole}
 
-              {/* Affichage du train */}
               {isTrainEngine && (
-                // Optionnel : Vous pouvez tourner l'emoji si c'est vertical
                 <div style={{ transform: isTrainVertical ? 'rotate(90deg)' : 'none' }}>{emojis.trainEngine}</div>
               )}
               {isTrainBody && emojis.trainBody}
 
-              {isEgg && !isHead && !isFood && emojis.egg}
+              {isShoot && !isHead && !isFood && emojis.shoot}
+
+              {/* Affichage de l'ennemi (Priorité basse par rapport au train mais haute par rapport au sol) */}
+              {isEnemy && !isTrainEngine && !isTrainBody && emojis.enemy}
             </div>
           );
         })}
