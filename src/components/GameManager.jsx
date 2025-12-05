@@ -8,14 +8,13 @@ export default function GameManager({ children }) {
   const [data, setData] = useState({
     money: 0,
     energy: 0,
-    
   });
-
+  const [currentModal, setCurrentModal] = useState({});
   useEffect(() => {
     let inter = setInterval(() => loop(), 1000);
     return () => {
-    clearInterval(inter)
-    }
+      clearInterval(inter);
+    };
   }, []);
   function changeAttribute(key, value) {
     setData((o) => ({
@@ -31,5 +30,5 @@ export default function GameManager({ children }) {
     changeMoney(50);
     console.log(data.money);
   }
-  return <GameManagerContext.Provider value={{ data }}>{children}</GameManagerContext.Provider>;
+  return <GameManagerContext.Provider value={{ data, currentModal, setCurrentModal }}>{children}</GameManagerContext.Provider>;
 }
