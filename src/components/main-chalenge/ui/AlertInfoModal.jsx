@@ -1,14 +1,16 @@
-import model from '@/assets/models/old_computer.glb?url';
 import { FaMoneyBill } from 'react-icons/fa';
 import { MdBolt, MdClose } from 'react-icons/md';
 import ThreeObject from '../../threejs/ThreeObject';
 import { useGameManager } from '../GameManager';
+import { ALERT_MODELS } from '../constants';
 
 export default function AlertInfoModal() {
   let { currentModal, setCurrentModal, changeMoney, changeEnergy, removeAlert, changeFossCount, changeProServerCount } =
     useGameManager();
 
   if (!currentModal) return;
+
+  const model = ALERT_MODELS[currentModal.type];
 
   return (
     <section className="absolute left-0 top-0 size-full m-auto z-20 flex justify-center items-center ">
@@ -24,7 +26,7 @@ export default function AlertInfoModal() {
           {currentModal.altenatives.map((e, i) => (
             <div key={i} className="w-full flex h-1/3">
               <div className="h-full w-48 hidden sm:block">
-                <ThreeObject model={model} />
+                <ThreeObject model={model.url} scale={model.scale} />
               </div>
               <article
                 onClick={() => {
@@ -52,6 +54,12 @@ export default function AlertInfoModal() {
               </article>
             </div>
           ))}
+          <p className="text-center">
+            Models by{' '}
+            <a href={model.author.url} className="text-blue-500 hover:text-blue-700 transition-colors">
+              {model.author.name}
+            </a>
+          </p>
         </section>
       </section>
     </section>
