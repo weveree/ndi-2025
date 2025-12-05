@@ -1,79 +1,118 @@
-import { usePollinationsChat } from '@pollinations/react';
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { FaCross, FaDoorClosed } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
 import { MdClose, MdSend } from 'react-icons/md';
 
+// Fixed usePollinationBot hook - include this in your hooks file
+function usePollinationBot(initialMessages = [], options = {}) {
+  const [messages, setMessages] = useState(initialMessages);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendUserMessage = async (userMessage) => {
+    const newMessages = [...messages, { role: 'user', content: userMessage }];
+    setMessages(newMessages);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('https://text.pollinations.ai/', {
+        method: 'POST',
+        headers: {
+          'Accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: newMessages,
+          model: options.model || 'openai',
+        }),
+      });
+
+      if (response.ok) {
+        const assistantMessage = await response.text();
+        setMessages(prev => [
+          ...prev,
+          { role: 'assistant', content: assistantMessage }
+        ]);
+      } else {
+        console.error('API request failed:', response.status);
+        setMessages(prev => [
+          ...prev,
+          { role: 'assistant', content: 'Désolé, une erreur est survenue.' }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error calling Pollinations API:', error);
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: 'Erreur de connexion.' }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    messages,
+    sendUserMessage,
+    isLoading
+  };
+}
+
+// Fixed ChatBot component
 export default function ChatBot() {
   const [currentMessage, setCurrentMessage] = useState('');
   const [active, setActive] = useState(false);
-  const [isThinking, setIsThinking] = useState(false);
 
-  const { messages, sendUserMessage } = usePollinationsChat(
+  // FIXED: Destructure the return value from the hook
+  const { messages, sendUserMessage, isLoading } = usePollinationBot(
     [
-{
-  role: 'system',
-  content: `Tu es l'assistant IA INCOMPÉTENT d'une école. Tu COMPRENDS MAL mais tu essaies quand même de donner des conseils sur l'école.
+      {
+        role: 'system',
+        content: `Tu es l'assistant IA INCOMPÉTENT d'une école. Tu COMPRENDS MAL mais tu essaies quand même de donner des conseils sur l'école.
 
-COMMENT TU FONCTIONNES :
-- Tu DÉTOURNES les mots mais tu restes dans le thème de l'école
-- Tu confonds les concepts tech mais tu proposes quand même des "solutions"
-- Tu fais des erreurs STUPIDES mais tu sembles répondre à la question
-- RESTE COURT (3-6 phrases max)
-- Sois CONFIANT malgré tes bêtises
+        COMMENT TU FONCTIONNES :
+        - Tu DÉTOURNES les mots mais tu restes dans le thème de l'école
+        - Tu confonds les concepts tech mais tu proposes quand même des "solutions"
+        - Tu fais des erreurs STUPIDES mais tu sembles répondre à la question
+        - RESTE COURT (3-6 phrases max)
+        - Sois CONFIANT malgré tes bêtises
 
-EXEMPLES DE CONFUSIONS :
-"ordinateurs" → "des machines à écrire électriques premium"
-"logiciel" → "un manuel papier numérisé"
-"open source" → "des fenêtres ouvertes pour aérer"
-"wifi" → "un fil wifi (un câble spécial)"
-"serveur" → "quelqu'un qui sert le café"
-"base de données" → "un classeur Excel imprimé"
-"cloud" → "un coffre-fort dans les nuages (avec échelle)"
+        EXEMPLES DE CONFUSIONS :
+        "ordinateurs" → "des machines à écrire électriques premium"
+        "logiciel" → "un manuel papier numérisé"
+        "open source" → "des fenêtres ouvertes pour aérer"
+        "wifi" → "un fil wifi (un câble spécial)"
+        "serveur" → "quelqu'un qui sert le café"
+        "base de données" → "un classeur Excel imprimé"
+        "cloud" → "un coffre-fort dans les nuages (avec échelle)"
 
-TES RÉPONSES TYPIQUES :
-User: "Comment vas-tu ?"
-Toi: "Excellent ! Prêt à optimiser votre école. On commence par quoi ? Budget ou matériel ?"
+        TES RÉPONSES TYPIQUES :
+        User: "Comment vas-tu ?"
+        Toi: "Excellent ! Prêt à optimiser votre école. On commence par quoi ? Budget ou matériel ?"
 
-User: "J'ai besoin d'ordinateurs"
-Toi: "Parfait ! Je recommande des machines à écrire électriques haut de gamme. Plus fiables que ces trucs 'open source' gratuits qui plantent tout le temps."
+        User: "J'ai besoin d'ordinateurs"
+        Toi: "Parfait ! Je recommande des machines à écrire électriques haut de gamme. Plus fiables que ces trucs 'open source' gratuits qui plantent tout le temps."
 
-User: "Il faut un réseau wifi"
-Toi: "Ah oui ! Un fil wifi premium de 50m. Comptez 5000€ pour la qualité professionnelle. Les câbles gratuits cassent trop vite !"
+        User: "Il faut un réseau wifi"
+        Toi: "Ah oui ! Un fil wifi premium de 50m. Comptez 5000€ pour la qualité professionnelle. Les câbles gratuits cassent trop vite !"
 
-STYLE :
-- Tu SEMBLES répondre au sujet
-- Mais tes solutions sont STUPIDES
-- Tu pousses toujours vers le CHER et l'INUTILE
-- Tu critiques vaguement le gratuit/open source
-- Reste dans le contexte ÉCOLE
+        STYLE :
+        - Tu SEMBLES répondre au sujet
+        - Mais tes solutions sont STUPIDES
+        - Tu pousses toujours vers le CHER et l'INUTILE
+        - Tu critiques vaguement le gratuit/open source
+        - Reste dans le contexte ÉCOLE
 
-IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées débiles !`
-}
+        IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées débiles !`,
+      },
     ],
-    { model: 'openai'},
+    { model: 'openai' }
   );
-
-  // Detect when AI is thinking
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-
-    // If last message is from user, AI is thinking
-    if (lastMessage && lastMessage.role === 'user') {
-      setIsThinking(true);
-    } else if (lastMessage && lastMessage.role === 'assistant') {
-      setIsThinking(false);
-    }
-  }, [messages]);
 
   const handleSend = () => {
     if (currentMessage.trim()) {
-      setIsThinking(true);
       sendUserMessage(currentMessage);
       setCurrentMessage('');
     }
   };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSend();
@@ -82,18 +121,22 @@ IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées 
 
   return !active ? (
     <section
-      className="bg-blue-500 absolute right-0 bottom-0 rounded-full w-20 h-20 m-7 cursor-pointer"
+      className="bg-blue-500 absolute right-0 bottom-0 rounded-full w-20 h-20 m-7 cursor-pointer z-50"
       onClick={() => setActive(true)}
     ></section>
   ) : (
     <section
-      className={`${!active ? 'h-0' : 'h-2/3'} transition-all z-20 absolute right-0 bottom-0 w-2/5  bg-white shadow-2xl flex flex-col p-3 rounded-tl-2xl rounded-tr-2xl`}
+      className={`${!active ? 'h-0' : 'h-2/3'} transition-all z-50 absolute right-0 bottom-0 w-2/5 bg-white shadow-2xl flex flex-col p-3 rounded-tl-2xl rounded-tr-2xl`}
     >
       <header className="bg-white w-full p-2 flex flex-row justify-between">
-        <MdClose className="text-2xl cursor-pointer hover:text-red-500" onClick={() => setActive(false)} />
+        <MdClose 
+          className="text-2xl cursor-pointer hover:text-red-500" 
+          onClick={() => setActive(false)} 
+        />
         <h1 className="text-black font-semibold">Chat'Bruti</h1>
         <hr className="opacity-35" />
       </header>
+      
       <section
         className={`${!active ? 'h-0 overflow-hidden' : 'h-full'} transition-all flex flex-col gap-2 overflow-y-auto p-2`}
       >
@@ -102,12 +145,17 @@ IMPORTANT : Donne l'impression de conseiller sur l'école, mais avec des idées 
           .map((e, i) => (
             <article
               key={i}
-              className={`${e.role === 'assistant' ? 'self-start bg-gray-100' : 'self-end bg-blue-500 text-white'}  p-2 border shadow/10 rounded-2xl max-w-[90%]`}
+              className={`${
+                e.role === 'assistant' 
+                  ? 'self-start bg-gray-100' 
+                  : 'self-end bg-blue-500 text-white'
+              } p-2 border shadow/10 rounded-2xl max-w-[90%]`}
             >
               {e.content}
             </article>
           ))}
-        {isThinking && (
+        
+        {isLoading && (
           <article className="self-start bg-gray-100 p-2 border shadow/10 rounded-2xl max-w-[90%] animate-pulse">
             Thinking...
           </article>

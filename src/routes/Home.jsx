@@ -8,7 +8,9 @@ extend({
   Graphics,
   Sprite,
 });
+
 import ChatBot from '../components/ChatBot';
+import AlertInfoModal from '../components/main-chalenge/ui/AlertInfoModal';
 export default function Home() {
   const parentRef = useRef(null);
 
@@ -16,6 +18,7 @@ export default function Home() {
     <GameManager>
       <ChatBot/>
       <div ref={parentRef} className="h-full">
+      <AlertInfoModal/>
         <Application resizeTo={parentRef}>
           <MainMap />
         </Application>
