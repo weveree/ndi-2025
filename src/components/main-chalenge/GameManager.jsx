@@ -9,6 +9,7 @@ export default function GameManager({ children }) {
     energy: 0,
     fossServer: 0,
     proServer: 0,
+    ended:false
   });
 
   const [alerts, setAlerts] = useState([]);
@@ -59,6 +60,12 @@ export default function GameManager({ children }) {
       ...prev,
       money: prev.money - 1 + 50 * prev.fossServer + -25 * prev.proServer,
     }));
+    if(data.money == 0)
+    {
+      setData((prev)=>({
+        ended:true
+      }))
+    }
     const alertTypes = Object.keys(ALERTS);
 
     if (Math.random() < 0.2) {
